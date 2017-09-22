@@ -1,0 +1,31 @@
+<html>
+	<body>
+		<h1>Enroll</h1>
+		
+		<script src="u2f-api.js"></script>
+		<script src="/enrollData.js?userName=userName"></script>
+		
+		<div id="status">Waiting for user touch</div>
+		
+		<script>
+		  var registerRequest = {
+				appId: enrollData.appId,
+				challenge: enrollData.challenge,
+				version: enrollData.version
+		  };
+		  
+		  u2f.register([registerRequest], [], function (result) {
+			  if (result.errorCode) {
+	        document.getElementById('status')
+	          .innerHTML = "Failed. Error code: " + result.errorCode;
+	        return;
+			  }
+			  document.location = "/enrollFinish"
+              + "?browserData=" + result.clientData
+              + "&enrollData=" + result.registrationData
+              + "&challenge=" + enrollData.challenge
+              + "&sessionId=" + enrollData.sessionId;			  
+		  });
+		</script>
+	</body>
+</html>

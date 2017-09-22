@@ -1,0 +1,45 @@
+<html>
+	<body>
+		<h1>Sign</h1>
+		
+    <script src="u2f-api.js"></script>
+		<script src="/signData.js?userName=userName"></script>
+		
+		<div id="status">Waiting for user touch</div>
+		
+		<script>
+			if ((typeof signData) == "undefined") {
+			  var statusDiv = document.getElementById('status');
+			  statusDiv.innerText = "No security keys registered";
+			} else {
+				var incomingSignData = {};  // requests keyed on keyHandle
+			  var signRequests = [];
+			  signData.forEach(function (sd) {
+				  incomingSignData[sd.keyHandle] = sd;
+				  signRequests.push({
+					  appId: sd.appId,
+					  keyHandle: sd.keyHandle,
+					  challenge: sd.challenge,
+					  version: sd.version
+				  });
+			  });
+				
+			  u2f.sign(signRequests, function(result) {
+	        if (result.errorCode) {
+	            document.getElementById('status')
+	              .innerHTML = "Failed. Error code: " + result.errorCode;
+	            return;
+	          }
+	          
+	          var incomingRequest = incomingSignData[result.keyHandle];
+	          location = "/signFinish"
+	                + "?browserData=" + result.clientData
+	                + "&appId=" + incomingRequest.appId
+	                + "&challenge=" + incomingRequest.challenge
+	                + "&signData=" + result.signatureData
+	                + "&sessionId=" + incomingRequest.sessionId;				  
+			  });
+			}
+		</script>
+	</body>
+</html>

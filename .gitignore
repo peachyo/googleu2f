@@ -1,0 +1,8 @@
+logs/
+target/
+bin/
+!.mvn/wrapper/maven-wrapper.jar
+
+.settings/
+.project
+.classpath
